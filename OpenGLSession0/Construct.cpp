@@ -170,3 +170,34 @@ std::array<Vertex, 48> Construct::House(glm::vec3 Color)
 
     return houseArray;
 }
+
+std::array<Vertex, 6> Construct::NotAPlane(glm::vec3 Color)
+{
+    std::array<Vertex, 6> notAPlaneArray;
+
+    glm::vec3 sizeXYZ = glm::vec3(1.f, 1.f, 1.f);
+  
+    glm::vec3 randomColor = glm::vec3(randomFloat(), randomFloat(), randomFloat());
+
+    Vertex v0{ -sizeXYZ.x, -sizeXYZ.y, sizeXYZ.z , randomColor.x, randomColor.y, randomColor.z };
+    Vertex v1{ sizeXYZ.x, -sizeXYZ.y, sizeXYZ.z, randomColor.x, randomColor.y, randomColor.z };
+    Vertex v2{ sizeXYZ.x, sizeXYZ.y, sizeXYZ.z , randomColor.x, randomColor.y, randomColor.z };
+    Vertex v3{ -sizeXYZ.x, sizeXYZ.y, sizeXYZ.z ,  randomColor.x, randomColor.y, randomColor.z };
+    Vertex v4{ -sizeXYZ.x, -sizeXYZ.y, -sizeXYZ.z ,  randomColor.x, randomColor.y, randomColor.z };
+    Vertex v5{ sizeXYZ.x, -sizeXYZ.y, -sizeXYZ.z ,  randomColor.x, randomColor.y, randomColor.z };
+    Vertex v6{ sizeXYZ.x, sizeXYZ.y, -sizeXYZ.z ,  randomColor.x, randomColor.y, randomColor.z };
+    Vertex v7{ -sizeXYZ.x, sizeXYZ.y, -sizeXYZ.z , randomColor.x, randomColor.y, randomColor.z };
+
+    // Modify vertices to create a slanted surface
+    v6.y += 0.5f; 
+
+    notAPlaneArray[0] = v3;
+    notAPlaneArray[1] = v2;
+    notAPlaneArray[2] = v6;
+    notAPlaneArray[3] = v6;
+    notAPlaneArray[4] = v7;
+    notAPlaneArray[5] = v3;
+
+    return notAPlaneArray; 
+
+}
