@@ -93,6 +93,24 @@ void Player::inputs(GLFWwindow* window)
 		UpdateVertices(speed, 0, 0, glm::vec3(1, 0, 0));
 		//position.x += translationSpeed;
 	}
+
+	
+
+	double mouseX;
+	double mouseY;
+	const unsigned int width = 800;
+	const unsigned int height = 800;
+	// Fetches the coordinates of the cursor
+	glfwGetCursorPos(window, &mouseX, &mouseY);
+
+	// Normalizes and shifts the coordinates of the cursor such that they begin in the middle of the screen
+	// and then "transforms" them into degrees 
+
+	float rotY = sensitivity * (float)(mouseX - (width / 2)) / width;
+
+
+	// Rotates the Orientation left and right
+	Orientation = glm::rotate(Orientation, glm::radians(-rotY), Up);
 }
 
 

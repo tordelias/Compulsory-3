@@ -10,17 +10,19 @@
 #include <glm/gtc/type_ptr.hpp>
 #include <cstdlib> 
 #include <ctime> 
-
-
 #include "Resources/Shaders/shaderClass.h"
 #include "Resources/Shaders/VAO.h"
 #include "Resources/Shaders/VBO.h"
 #include "Resources/Shaders/EBO.h"
+
 #include "Camera.h"
+
 #include "Pokal.h"
 #include "Player.h"
 #include "LSM.h"
 #include "SphereCollition.h"
+#include "stb_image.h"
+#include "Texture.h"
 
 
 
@@ -29,6 +31,11 @@ const unsigned int height = 800;
 using namespace std;
 
 void processInput(GLFWwindow* window);
+
+
+
+
+
 
 
 int main()
@@ -67,7 +74,9 @@ int main()
 	Shader shaderProgram("default.vert", "default.frag");
 	shaderProgram.Activate();
 
-	
+	 
+
+
 	
 
 
@@ -83,13 +92,12 @@ int main()
 
 
 
-//	Player house(5.0f, glm::vec3(0.0f, -16.0f, -23.0f), 0.5f, 0.0f, 0.7f, 3);
-//
-//
-//
-//	Player NPC(1.0f, glm::vec3(-8.0f, -16, 0.0f), 1.0f, 0.0f, 0.0f, 1);
 
+		//Texture
 
+	Texture texture("textures/cool_Image.jpg", 1, shaderProgram);
+	Texture texture1("textures/HARDASSPFP.jpg", 1, shaderProgram);
+	//Texture texture2("textures/cobblestone.jpg", 2, shaderProgram);
 
 	// Unbind all to prevent accidentally modifying them
 	
@@ -104,7 +112,7 @@ int main()
 	
 	
 	//Camera object
-	Camera camera(width, height, glm::vec3(0.0f, 30.0f, 100.0f));
+	Camera camera(width, height, glm::vec3(0.0f, 10.0f, 100.0f));
 	
 	//speed of cube
 	float translationSpeed = 0.05f;
@@ -122,6 +130,8 @@ int main()
 
 	while (!glfwWindowShouldClose(window))
 	{
+
+		camera.Position = glm::vec3(myPlayer.position.x, myPlayer.position.y + 3, myPlayer.position.z +10);
 		// Specify the color of the background
 		glClearColor(0.07f, 0.13f, 0.17f, 1.0f);
 		// Clean the back buffer and depth buffer
@@ -145,13 +155,20 @@ int main()
 		//Set render distance and FOV
 		glm::mat4 viewproj= camera.Matrix(45.0f, 0.1f, 100.0f, shaderProgram, "camMatrix");
 
+		glBindTexture(GL_TEXTURE_2D, texture.texture);
+		glActiveTexture(GL_TEXTURE1);
+
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, myPlayer.position);
+		//model = glm::rotate(model, myPlayer.Orientation);
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(viewproj*model));
 		myPlayer.BindVAO();
 		glDrawArrays(GL_TRIANGLES, 0, myPlayer.mVertecies.size());
 		myPlayer.UnbindVAO();
+		texture.UnbindTexture();
 
+		//glBindTexture(GL_TEXTURE_2D, texture2.texture);
+		//glActiveTexture(GL_TEXTURE2);
 
 		glm::mat4 planeModel = glm::mat4(1.0f);
 		planeModel = glm::translate(planeModel, myPlane.position);
@@ -160,13 +177,17 @@ int main()
 		myPlane.BindVAO();
 		glDrawArrays(GL_TRIANGLES, 0, myPlane.mVertecies.size());
 		myPlane.UnbindVAO();
+		//texture2.UnbindTexture();
 
+		glBindTexture(GL_TEXTURE_2D, texture1.texture);
+		glActiveTexture(GL_TEXTURE1);
 		glm::mat4 modelNPC = glm::mat4(1.0f);
 		modelNPC = glm::translate(modelNPC, myNPC.position);
 		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(viewproj * modelNPC));
 		myNPC.BindVAO();
 		glDrawArrays(GL_TRIANGLES, 0, myNPC.mVertecies.size());
 		myNPC.UnbindVAO();
+		texture1.UnbindTexture();
 
 
 
