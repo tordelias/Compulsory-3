@@ -11,6 +11,7 @@ Texture::Texture(const char* texture1, int num, Shader shaderProgram)
 	ID = num; 
 
 	glGenTextures(1, &texture);
+	glActiveTexture(GL_TEXTURE0 + num);
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	// set the texture wrapping/filtering options (on the currently bound texture object)

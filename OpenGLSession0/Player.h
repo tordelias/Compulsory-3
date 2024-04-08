@@ -18,20 +18,14 @@ class Pokal;
 
 
 using namespace std;
-//struct PlayerVertex
-//{
-//	double x, y, z;
-//	float r, g, b;
-//
-//};
+
 class Player {
 private:
 
 
 public:
-std::array<Vertex, 36> mVertecies;
-std::array<Vertex, 48> mHouseVertecies;
-std::array<Vertex, 6> mPlaneVertecies;
+std::vector<Vertex> mVertecies;
+
 	glm::vec3 position;
 	float r, g, b;
 	glm::vec3 velocity;
@@ -42,6 +36,8 @@ std::array<Vertex, 6> mPlaneVertecies;
 	glm::vec3 Up = glm::vec3(0.0f, 1.0f, 0.0f);
 
 	std::array<glm::vec3, 4> planePoints; 
+
+	float size1 = 1.f; 
 	
 	VAO VAO5;
 	VBO VBO1;
@@ -66,6 +62,11 @@ std::array<Vertex, 6> mPlaneVertecies;
 			VAO5.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 			VAO5.Unbind();
 			VBO1.Unbind();
+
+			planePoints[0] = glm::vec3(-scale, scale, scale) + position;
+			planePoints[1] = glm::vec3(scale, scale, scale) + position;
+			planePoints[2] = glm::vec3(scale, scale, -scale) + position;
+			planePoints[3] = glm::vec3(-scale, scale, -scale) + position;
 		}
 		else if (figure == 2)
 		{
@@ -83,11 +84,11 @@ std::array<Vertex, 6> mPlaneVertecies;
 
 		else if (figure == 3)
 		{
-			mHouseVertecies = con.House(glm::vec3(red, green, blue));
+			mVertecies = con.House(glm::vec3(red, green, blue));
 
 			VAO5.Bind();
 			VBO1.Bind();
-			glBufferData(GL_ARRAY_BUFFER, mHouseVertecies.size() * sizeof(Vertex), mHouseVertecies.data(), GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, mVertecies.size() * sizeof(Vertex), mVertecies.data(), GL_STATIC_DRAW);
 			VAO5.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
 			VAO5.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 			VAO5.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
@@ -97,21 +98,21 @@ std::array<Vertex, 6> mPlaneVertecies;
 
 		else if (figure == 4)
 		{
-			mPlaneVertecies = con.NotAPlane(glm::vec3(red, green, blue));
+			mVertecies = con.NotAPlane(glm::vec3(red, green, blue));
 
 			VAO5.Bind();
 			VBO1.Bind();
-			glBufferData(GL_ARRAY_BUFFER, mPlaneVertecies.size() * sizeof(Vertex), mPlaneVertecies.data(), GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, mVertecies.size() * sizeof(Vertex), mVertecies.data(), GL_STATIC_DRAW);
 			VAO5.LinkAttrib(VBO1, 0, 3, GL_FLOAT, 8 * sizeof(float), (void*)0);
 			VAO5.LinkAttrib(VBO1, 1, 3, GL_FLOAT, 8 * sizeof(float), (void*)(3 * sizeof(float)));
 			VAO5.LinkAttrib(VBO1, 2, 2, GL_FLOAT, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 			VAO5.Unbind();
 			VBO1.Unbind();
 
-			planePoints[0] = glm::vec3(-scale, scale, scale);
-			planePoints[1] = glm::vec3(scale, scale, scale);
-			planePoints[2] = glm::vec3(scale, scale * 1.5f, -scale);
-			planePoints[3] = glm::vec3(-scale, scale, -scale);
+			planePoints[0] = glm::vec3(-scale, scale, scale) + position;
+			planePoints[1] = glm::vec3(scale, scale, scale) + position;
+			planePoints[2] = glm::vec3(scale, scale * 1.5f, -scale) + position;
+			planePoints[3] = glm::vec3(-scale, scale, -scale) + position;
 		}
 		else
 		{
@@ -133,6 +134,7 @@ std::array<Vertex, 6> mPlaneVertecies;
 
 		//collitionSphere
 		sphere_radius = a; 
+		size1 = scale;
 
 
 		//flattenVertices();
@@ -153,9 +155,7 @@ std::array<Vertex, 6> mPlaneVertecies;
 	
 
 
-	void flattenVertices();
-
-	glm::vec3 calculateBarycentricCoordinates( glm::vec3& point, const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2);
+	glm::vec3 calculateBarycentricCoordinates( glm::vec3& cpoint, bool ground);
 
 public:
 	float a{ 1.0f };

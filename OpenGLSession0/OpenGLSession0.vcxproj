@@ -143,7 +143,9 @@
     <ClCompile Include="Resources\Shaders\VAO.cpp" />
     <ClCompile Include="Resources\Shaders\VBO.cpp" />
     <ClCompile Include="SphereCollition.cpp" />
+    <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="Table.cpp" />
+    <ClCompile Include="Texture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
@@ -183,7 +185,9 @@
     <ClInclude Include="Resources\Shaders\VAO.h" />
     <ClInclude Include="Resources\Shaders\VBO.h" />
     <ClInclude Include="SphereCollition.h" />
+    <ClInclude Include="stb_image.h" />
     <ClInclude Include="Table.h" />
+    <ClInclude Include="Texture.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="default.frag" />

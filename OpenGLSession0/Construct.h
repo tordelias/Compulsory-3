@@ -1,5 +1,5 @@
 #pragma once
-#include <array>
+#include <vector>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 struct Vertex
@@ -12,10 +12,10 @@ struct Vertex
 class Construct
 {
 public:
-	std::array<Vertex, 36> Cube(glm::vec3 Color);
-	std::array<Vertex, 36> Table(glm::vec3 Color);
-	std::array<Vertex, 48> House( glm::vec3 Color);
-	std::array<Vertex, 6> NotAPlane(glm::vec3 Color); 
+	std::vector<Vertex> Cube(glm::vec3 Color);
+	std::vector<Vertex> Table(glm::vec3 Color);
+	std::vector<Vertex> House( glm::vec3 Color);
+	std::vector<Vertex> NotAPlane(glm::vec3 Color);
 
 
 	float randomFloat() {

@@ -51,15 +51,7 @@ void Player::UpdateVertices(float Xspeed, float Yspeed, float Zspeed, glm::vec3 
 	position.x += Xspeed;
 	position.y += Yspeed;
 position.z += Zspeed;
-	//for (Vertex& vertex : mVertecies) {
-	//	vertex.x += Xspeed * velocity.x;
-	//	vertex.y += Yspeed * velocity.y;
-	//	vertex.z += Zspeed * velocity.z;	
-	//}
-	//position.x = mVertecies[1].x + a;
-	//position.z = mVertecies[1].z - a;
-	//
-	//VBO1.UpdateData(getFlattenedVertices().data(), getFlattenedVertices().size() * sizeof(GLdouble));
+
 }
 
 VBO Player::GetVBO()
@@ -178,9 +170,8 @@ void Player::Patrol(std::vector<double> coefficients)
 		double Derivative = computeDerivativeAtPoint(coefficients, xvalue) / 4096;
 		for (Vertex& vertex : mVertecies) {
 			position.x += xspeed / 2;
-			position.y += 0;
-			if (xPositiveDir) position.y += Derivative;
-			else position.y -= Derivative;
+			if (xPositiveDir) position.z += Derivative;
+			else position.z -= Derivative;
 		}
 		xvalue += xspeed;
 		if (xvalue >= 1) {
@@ -194,56 +185,74 @@ void Player::Patrol(std::vector<double> coefficients)
 	//}
 }
 
-void Player::flattenVertices()
+
+glm::vec3 Player::calculateBarycentricCoordinates(glm::vec3& cpoint, bool ground)
 {
-	//std::vector<GLfloat> flattenedVertices;
-	//for (const Vertex& vertex : mVertecies) {
-	//	flattenedVertices.push_back(vertex.x);
-	//	flattenedVertices.push_back(vertex.y);
-	//	flattenedVertices.push_back(vertex.z);
-	//	flattenedVertices.push_back(vertex.r);
-	//	flattenedVertices.push_back(vertex.g);
-	//	flattenedVertices.push_back(vertex.b);
-	//}
-}
+	float u, v, w; 
 
-glm::vec3 Player::calculateBarycentricCoordinates(glm::vec3& point, const glm::vec3& v0, const glm::vec3& v1, const glm::vec3& v2)
-{
-	
+	glm::vec3 point = cpoint;
+
+	for (int i = 0; i < mVertecies.size() - 2; i += 3)
+	{
+
+		glm::vec3 v0 = glm::vec3((mVertecies[i].x * size1) + position.x, (mVertecies[i].y * size1) + position.y, (mVertecies[i].z * size1) + position.z);
+		glm::vec3 v1 = glm::vec3((mVertecies[i + 1].x * size1) + position.x, (mVertecies[i + 1].y * size1) + position.y, (mVertecies[i + 1].z * size1) + position.z);
+		glm::vec3 v2 = glm::vec3((mVertecies[i + 2].x * size1) + position.x, (mVertecies[i + 2].y * size1) + position.y, (mVertecies[i + 2].z * size1) + position.z);
 
 
-	glm::vec3 v0v1(v1.x - v0.x, v1.y - v0.y, v1.z - v0.z);
-	glm::vec3 v0v2(v2.x - v0.x, v2.y - v0.y, v2.z - v0.z);
-	glm::vec3 v0p(point.x - v0.x, point.y - v0.y, point.z - v0.z);
 
-	// Compute dot products
-	float dot00 = glm::dot(v0v1, v0v1);
-	float dot01 = glm::dot(v0v1, v0v2);
-	float dot02 = glm::dot(v0v1, v0p);
-	float dot11 = glm::dot(v0v2, v0v2);
-	float dot12 = glm::dot(v0v2, v0p);
+		if (!ground)
+		{
 
-	// Compute barycentric coordinates
-	float invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-	float u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-	float v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-	float w = 1 - u - v;
-	if (u > 0 && v > 0 && w > 0) {
-		float heightV6 = v0.y * w + v1.y * u + v2.y * v;
-		point.y = heightV6 - 38; // -19 is planePosition.y -2, offset to have player above 
-		//std::cout << "Collision " << u << std::endl;
+			v0.y = 0;
+			v1.y = 0;
+			v2.y = 0;
+			point.y = 0;
+
+
+		}
+
+
+		glm::vec3 v0v1(v1.x - v0.x, v1.y - v0.y, v1.z - v0.z);
+		glm::vec3 v0v2(v2.x - v0.x, v2.y - v0.y, v2.z - v0.z);
+		glm::vec3 v0p(point.x - v0.x, point.y - v0.y, point.z - v0.z);
+
+		// Compute dot products
+		float dot00 = glm::dot(v0v1, v0v1);
+		float dot01 = glm::dot(v0v1, v0v2);
+		float dot02 = glm::dot(v0v1, v0p);
+		float dot11 = glm::dot(v0v2, v0v2);
+		float dot12 = glm::dot(v0v2, v0p);
+
+		// Compute barycentric coordinates
+		float invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+		 u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+		 v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+		 w = 1 - u - v;
+		if (u > 0 && v > 0 && w > 0) {
+			if (ground)
+			{
+				float heightV6 = v0.y * w + v1.y * u + v2.y * v;
+				cpoint.y = heightV6 + 1; // -19 is planePosition.y -2, offset to have player above 
+				//std::cout << "Collision " << u << std::endl;
+			}
+			else
+			{
+				cpoint.y += 1;
+				//std::cout << "Collision " << u << std::endl;
+			}
+		}
+
+		//else {
+		//    std::cout << "x: " << u << std::endl;
+		//    std::cout << "y: " << v << std::endl;
+		//    std::cout << "z: " << w << std::endl;
+		//}
+
+
+
+
 	}
 
-	//else {
-	//	std::cout << "x: " << u << std::endl;
-	//	std::cout << "y: " << v << std::endl;
-	//	std::cout << "z: " << w << std::endl;
-	//}
-
-
-
-
 	return glm::vec3(u, v, w);
-
-	
 }

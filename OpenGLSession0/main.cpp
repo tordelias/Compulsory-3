@@ -26,8 +26,8 @@
 
 
 
-const unsigned int width = 800;
-const unsigned int height = 800;
+const unsigned int width = 2560;
+const unsigned int height = 1440;
 using namespace std;
 
 void processInput(GLFWwindow* window);
@@ -84,11 +84,13 @@ int main()
 	//creating our objects in the scene
 
 
-	Player myPlayer(1.0f, glm::vec3(0,0.5,40), 0.1f, 0.0f, 0.5f, 1);
+	Player myPlayer(1.0f, glm::vec3(0,0.5,40), 1.f, 1.0f, 1.f, 1);
 
-	Player myPlane(40.f, glm::vec3(0, -41, 0), 0.f, 1.f, 0.f, 4); 
+	Player myPlane(40.f, glm::vec3(0, -41, 0), 1.f, 1.f, 1.f, 4); 
 
-	Player myNPC(1.0f, glm::vec3(5, 0.5, 20), 0.1f, 0.4f, 0.5f, 1);
+	Player myNPC(1.0f, glm::vec3(5, 0.5, 20), 1.f, 1.f, 1.f, 1);
+	Player cube0(1.0f, glm::vec3(10, 0.5, 0), 1.f, 1.f, 1.f, 1);
+	Player cube1(1.0f, glm::vec3(-10, 0.5, 5), 1.f, 1.f, 1.f, 1);
 
 
 
@@ -128,6 +130,12 @@ int main()
 	glEnable(GL_DEPTH_TEST);
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+
+
+	// or set it via the texture class
+
+
+
 	while (!glfwWindowShouldClose(window))
 	{
 
@@ -139,11 +147,17 @@ int main()
 
 		shaderProgram.Activate();
 
-		myPlane.calculateBarycentricCoordinates(myPlayer.position, myPlane.planePoints[0], myPlane.planePoints[1], myPlane.planePoints[2]); 
-		myPlane.calculateBarycentricCoordinates(myPlayer.position, myPlane.planePoints[2], myPlane.planePoints[3], myPlane.planePoints[0]);
+		myPlane.calculateBarycentricCoordinates(myPlayer.position, true);
+		myPlane.calculateBarycentricCoordinates(myNPC.position, true);
+		myPlane.calculateBarycentricCoordinates(cube0.position, true);
+		myPlane.calculateBarycentricCoordinates(cube1.position, true);
 
-		myPlane.calculateBarycentricCoordinates(myNPC.position, myPlane.planePoints[0], myPlane.planePoints[1], myPlane.planePoints[2]);
-		myPlane.calculateBarycentricCoordinates(myNPC.position, myPlane.planePoints[2], myPlane.planePoints[3], myPlane.planePoints[0]);
+		myNPC.calculateBarycentricCoordinates(myPlayer.position, false);
+		cube0.calculateBarycentricCoordinates(myPlayer.position, false);
+		cube1.calculateBarycentricCoordinates(myPlayer.position, false);
+
+
+
 
 		myNPC.Patrol(PatrolPath.getCoefficients());
 		processInput(window);
@@ -157,6 +171,7 @@ int main()
 
 		glBindTexture(GL_TEXTURE_2D, texture.texture);
 		glActiveTexture(GL_TEXTURE1);
+
 
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, myPlayer.position);
@@ -188,6 +203,20 @@ int main()
 		glDrawArrays(GL_TRIANGLES, 0, myNPC.mVertecies.size());
 		myNPC.UnbindVAO();
 		texture1.UnbindTexture();
+
+		glm::mat4 cubemodel = glm::mat4(1.0f);
+		cubemodel = glm::translate(cubemodel, cube0.position);
+		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(viewproj * cubemodel));
+		cube0.BindVAO();
+		glDrawArrays(GL_TRIANGLES, 0, cube0.mVertecies.size());
+		cube0.UnbindVAO();
+
+		glm::mat4 cubemodel1 = glm::mat4(1.0f);
+		cubemodel1 = glm::translate(cubemodel1, cube1.position);
+		glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "camMatrix"), 1, GL_FALSE, glm::value_ptr(viewproj * cubemodel1));
+		cube1.BindVAO();
+		glDrawArrays(GL_TRIANGLES, 0, cube1.mVertecies.size());
+		cube1.UnbindVAO();
 
 
 
