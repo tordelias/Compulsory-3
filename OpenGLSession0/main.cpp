@@ -26,8 +26,8 @@
 
 
 
-const unsigned int width = 2560;
-const unsigned int height = 1440;
+const unsigned int width = 1960;
+const unsigned int height = 1080;
 using namespace std;
 
 void processInput(GLFWwindow* window);

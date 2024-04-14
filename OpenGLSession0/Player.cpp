@@ -200,46 +200,40 @@ glm::vec3 Player::calculateBarycentricCoordinates(glm::vec3& cpoint, bool ground
 		glm::vec3 v2 = glm::vec3((mVertecies[i + 2].x * size1) + position.x, (mVertecies[i + 2].y * size1) + position.y, (mVertecies[i + 2].z * size1) + position.z);
 
 
-
 		if (!ground)
 		{
-
 			v0.y = 0;
 			v1.y = 0;
 			v2.y = 0;
 			point.y = 0;
-
-
 		}
 
 
-		glm::vec3 v0v1(v1.x - v0.x, v1.y - v0.y, v1.z - v0.z);
-		glm::vec3 v0v2(v2.x - v0.x, v2.y - v0.y, v2.z - v0.z);
-		glm::vec3 v0p(point.x - v0.x, point.y - v0.y, point.z - v0.z);
+		glm::vec3 v0v1 = v1 - v0; 
+		glm::vec3 v0v2 = v2 - v0; 
+		glm::vec3 v0p = point - v0; 
 
 		// Compute dot products
-		float dot00 = glm::dot(v0v1, v0v1);
+		float dot00 = glm::dot(v0v1, v0v1); // v0v1^2
 		float dot01 = glm::dot(v0v1, v0v2);
 		float dot02 = glm::dot(v0v1, v0p);
-		float dot11 = glm::dot(v0v2, v0v2);
+		float dot11 = glm::dot(v0v2, v0v2); // v0v2^2
 		float dot12 = glm::dot(v0v2, v0p);
 
 		// Compute barycentric coordinates
-		float invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-		 u = (dot11 * dot02 - dot01 * dot12) * invDenom;
-		 v = (dot00 * dot12 - dot01 * dot02) * invDenom;
-		 w = 1 - u - v;
+		float invDenom = 1 / (dot00 * dot11 - dot01 * dot01); // arealet av trekanten / 1 for å gange senere 
+		 v = (dot11 * dot02 - dot01 * dot12) * invDenom;
+		 w = (dot00 * dot12 - dot01 * dot02) * invDenom;
+		 u = 1 - w - v;
 		if (u > 0 && v > 0 && w > 0) {
 			if (ground)
 			{
-				float heightV6 = v0.y * w + v1.y * u + v2.y * v;
-				cpoint.y = heightV6 + 1; // -19 is planePosition.y -2, offset to have player above 
-				//std::cout << "Collision " << u << std::endl;
+				float height = v0.y * u + v1.y * v + v2.y * w; // Pu * Qv * Rw = point
+				cpoint.y = height + 1; 
 			}
 			else
 			{
 				cpoint.y += 1;
-				//std::cout << "Collision " << u << std::endl;
 			}
 		}
 
