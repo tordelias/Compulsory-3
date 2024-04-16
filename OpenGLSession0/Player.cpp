@@ -207,6 +207,28 @@ glm::vec3 Player::calculateBarycentricCoordinates(glm::vec3& cpoint, bool ground
 			v2.y = 0;
 			point.y = 0;
 		}
+		//glm::vec3 x1 = v1 - v0;
+		//glm::vec3 x2 = v2 - v0;
+		//glm::vec3 u1 = v1 - point;
+		//glm::vec3 u2 = v2 - point;	
+		//glm::vec3 v_1 = v0 - point;
+
+		//glm::vec3 crossX = glm::cross(x1, x2);
+		//glm::vec3 crossU = glm::cross(u1, u2);
+		//glm::vec3 crossV = glm::cross(u2, v_1);
+
+		//float magCrossX = glm::length(crossX);
+		//float magCrossU = glm::length(crossU);
+		//float magCrossV = glm::length(crossV);
+
+		//if (magCrossX == 0) {
+		//	// Handle this case appropriately (skip or set default values)
+		//	continue;
+		//}
+
+		//u = magCrossU / magCrossX;
+		//v = magCrossV / magCrossX;
+		//w = 1 - u - v;
 
 
 		glm::vec3 v0v1 = v1 - v0; 
